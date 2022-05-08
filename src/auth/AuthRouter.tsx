@@ -8,6 +8,7 @@ interface Props {
 
 export const AuthRouter: React.FC<Props> = ({ children }) => {
   const cookie = new Cookie();
-  const isLoggedIn = cookie.get("session");
-  return isLoggedIn ? children : <Navigate to="/login" />;
+  // TODO: add actual user verification and sessions
+  const isLoggedIn = cookie.get("sessionId");
+  return isLoggedIn != null ? children : <Navigate to="/login" />;
 };

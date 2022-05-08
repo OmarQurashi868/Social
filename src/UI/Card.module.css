@@ -8,10 +8,12 @@
   border-radius: 6px;
   box-shadow: 1px 1px 15px 0px rgb(177, 177, 177);
   padding: 1rem;
+  margin: auto;
+  margin-bottom: 2rem;
 }
 
 @media (min-width: 768px) {
   .Card {
-    width: 25%;
+    width: 50%;
   }
 }

@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import Cookie from "universal-cookie";
 import { Navigate, useNavigate } from "react-router-dom";
-import styles from "./Register.module.css";
-import { Card } from "../UI/Card";
+import styles from "../UI/Form.module.css";
+import Card from "../UI/Card";
+import Button from "../UI/Button";
 
 interface Props {}
 
@@ -10,6 +11,7 @@ export const Register: React.FC<Props> = () => {
   const cookie = new Cookie();
   let navigate = useNavigate();
   const [errorState, setErrorState] = useState([{ message: "e", key: "e" }]);
+  const [btnLoading, setBtnLoading] = useState(false);
   let statusCode = 0;
 
   const nameRef = useRef<HTMLInputElement>(null);
@@ -18,7 +20,7 @@ export const Register: React.FC<Props> = () => {
   const pass2Ref = useRef<HTMLInputElement>(null);
   const submitHandler = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    // TODO: send http post request to backend for verification and confirmation
+    setBtnLoading(true);
     fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -33,10 +35,10 @@ export const Register: React.FC<Props> = () => {
     })
       .then((res) => {
         statusCode = res.status;
+        setBtnLoading(false);
         if (statusCode === 201) {
           setErrorState([{ message: "e", key: "e" }]);
-          cookie.set("session", nameRef.current?.value, { path: "/" });
-          navigate("/");
+          
         }
         return res.json();
       })
@@ -53,23 +55,33 @@ export const Register: React.FC<Props> = () => {
               errors.push(errorData);
             }
             setErrorState(errors);
-          }
-          else if (res?.message?.code) {
+          } else if (res?.message?.code) {
             if (res?.message?.code === 11000) {
-              const errorMessage = `${Object.keys(res.message.keyPattern)[0]} is already used`
+              const errorMessage = `${
+                Object.keys(res.message.keyPattern)[0]
+              } is already used`;
               errorMessage[0].toUpperCase();
-              const errorData = [{
-                message: errorMessage,
-                key: Object.keys(res.message.keyPattern)[0]
-              }]
+              const errorData = [
+                {
+                  message: errorMessage,
+                  key: Object.keys(res.message.keyPattern)[0],
+                },
+              ];
               setErrorState(errorData);
             }
           }
+        } else {
+          cookie.set("sessionId", res._id, { path: "/" });
+          navigate("/");
         }
       });
   };
 
-  const isLoggedIn = cookie.get("session");
+  const changeHandler = () => {
+    setErrorState([{ message: "e", key: "e" }]);
+  };
+
+  const isLoggedIn = cookie.get("sessionId");
 
   const loginPath = `${window.location.origin}/login`;
 
@@ -83,17 +95,51 @@ export const Register: React.FC<Props> = () => {
               {e.message}
             </div>
           ))}
-        Username:
-        <input type="text" id="username" ref={nameRef} autoComplete="off" />
-        Email:
-        <input type="email" id="email" ref={emailRef} autoComplete="off" />
-        Password:
-        <input type="password" id="password" ref={passRef} />
-        Confirm password:
-        <input type="password" id="password2" ref={pass2Ref} />
-        <button type="submit" id="submitBtn">
+        <div>
+          Username:
+          <input
+            type="text"
+            id="username"
+            ref={nameRef}
+            autoComplete="off"
+            onChange={changeHandler}
+          />
+        </div>
+
+        <div>
+          Email:
+          <input
+            type="email"
+            id="email"
+            ref={emailRef}
+            autoComplete="off"
+            onChange={changeHandler}
+          />
+        </div>
+
+        <div>
+          Password:
+          <input
+            type="password"
+            id="password"
+            ref={passRef}
+            onChange={changeHandler}
+          />
+        </div>
+
+        <div>
+          Confirm password:
+          <input
+            type="password"
+            id="password2"
+            ref={pass2Ref}
+            onChange={changeHandler}
+          />
+        </div>
+
+        <Button type="submit" id="submitBtn" isLoading={btnLoading}>
           Register
-        </button>
+        </Button>
       </form>
       <div>
         Already registered? <a href={loginPath}>Log in</a>
