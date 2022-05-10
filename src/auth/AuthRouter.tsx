@@ -1,14 +1,66 @@
-import React, { ReactElement } from "react";
-import { Navigate } from "react-router-dom";
+import React, { ReactElement, useState, useEffect } from "react";
 import Cookie from "universal-cookie";
+import verifyLogin from "./VerifyLogin";
+import Home from "../home/Home";
+import Login from "./Login";
+import Register from "./Register";
 
-interface Props {
-  children: ReactElement;
-}
+interface Props {}
+const sessionlessRoutes = ["/login", "/register"];
+const sessionRoutes = ["/home", "/"];
 
-export const AuthRouter: React.FC<Props> = ({ children }) => {
+const AuthRouter: React.FC<Props> = () => {
   const cookie = new Cookie();
-  // TODO: add actual user verification and sessions
-  const isLoggedIn = cookie.get("sessionId");
-  return isLoggedIn != null ? children : <Navigate to="/login" />;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [path, setPath] = useState("/");
+  const userId = cookie.get("userId");
+  const sessionId = cookie.get("sessionId");
+
+  useEffect(() => {
+    verifyLogin(cookie.get("userId"), cookie.get("sessionId")).then((res) => {
+      setIsLoggedIn(res);
+    });
+  }, [userId, sessionId]);
+
+  useEffect(() => { 
+    if (sessionlessRoutes.includes(window.location.pathname)) {
+      if (!isLoggedIn) {
+        setPath(window.location.pathname);
+      } else {
+        history.pushState({}, "", "/");
+        setPath("/");
+      }
+    } else if (sessionRoutes.includes(window.location.pathname)) {
+      if (isLoggedIn) {
+        setPath(window.location.pathname);
+      } else {
+        setPath("/login");
+      }
+    } else {
+      console.log(isLoggedIn)
+      if (isLoggedIn) {
+        history.pushState({}, "", "/");
+        setPath("/");
+      } else {
+        // history.pushState({}, "", "/login");
+        setPath("/login");
+      }
+    }
+  }, [isLoggedIn]);
+
+
+  // history.pushState({}, "", path);
+  switch (path) {
+    case "/login":
+      return <Login />;
+    case "/register":
+      return <Register />;
+    case "/":
+      return <Home />;
+    default:
+      history.pushState({}, "", "loading");
+      return <div>Default</div>;
+  }
 };
+
+export default AuthRouter;

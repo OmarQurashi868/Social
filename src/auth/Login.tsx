@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import Cookie from "universal-cookie";
-import { Navigate } from "react-router-dom";
 import styles from "../UI/Form.module.css";
 import Card from "../UI/Card";
 import { useNavigate } from "react-router-dom";
@@ -8,11 +7,12 @@ import Button from "../UI/Button";
 
 interface Props {}
 
-export const Login: React.FC<Props> = () => {
+const Login: React.FC<Props> = () => {
   let navigate = useNavigate();
   const cookie = new Cookie();
   const [errorState, setErrorState] = useState("e");
   const [btnLoading, setBtnLoading] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
   let statusCode = 0;
 
   const nameRef = useRef<HTMLInputElement>(null);
@@ -25,7 +25,7 @@ export const Login: React.FC<Props> = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userData: {
-          username: nameRef.current?.value,
+          username: nameRef.current?.value.trim(),
           password: passRef.current?.value,
         },
       }),
@@ -39,10 +39,12 @@ export const Login: React.FC<Props> = () => {
         return res.json();
       })
       .then((res) => {
-        if (statusCode != 200) setErrorState(res.message);
-        else {
-          cookie.set("sessionId", res._id, { path: "/" });
-          navigate("/");
+        if (statusCode != 200) {
+          setErrorState(res.message);
+        } else {
+          cookie.set("userId", res._id, { path: "/" });
+          cookie.set("sessionId", res.sessionId, { path: "/" });
+          window.location.href = "/";
         }
       });
   };
@@ -51,11 +53,9 @@ export const Login: React.FC<Props> = () => {
     setErrorState("e");
   };
 
-  const isLoggedIn = cookie.get("sessionId");
-
   const registerPath = `${window.location.origin}/register`;
 
-  return !isLoggedIn ? (
+  return (
     <Card className={styles.Center}>
       Welcome back
       <form onSubmit={submitHandler} className={styles.Form}>
@@ -89,7 +89,7 @@ export const Login: React.FC<Props> = () => {
         New user? <a href={registerPath}>Register</a>
       </div>
     </Card>
-  ) : (
-    <Navigate to="/" />
   );
 };
+
+export default Login;

@@ -1,15 +1,13 @@
 import React, { useRef, useState } from "react";
 import Cookie from "universal-cookie";
-import { Navigate, useNavigate } from "react-router-dom";
 import styles from "../UI/Form.module.css";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 
 interface Props {}
 
-export const Register: React.FC<Props> = () => {
+const Register: React.FC<Props> = () => {
   const cookie = new Cookie();
-  let navigate = useNavigate();
   const [errorState, setErrorState] = useState([{ message: "e", key: "e" }]);
   const [btnLoading, setBtnLoading] = useState(false);
   let statusCode = 0;
@@ -26,8 +24,8 @@ export const Register: React.FC<Props> = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userData: {
-          username: nameRef.current?.value,
-          email: emailRef.current?.value,
+          username: nameRef.current?.value.trim(),
+          email: emailRef.current?.value.trim(),
           password: passRef.current?.value,
           passwordConfirm: pass2Ref.current?.value,
         },
@@ -38,13 +36,11 @@ export const Register: React.FC<Props> = () => {
         setBtnLoading(false);
         if (statusCode === 201) {
           setErrorState([{ message: "e", key: "e" }]);
-          
         }
         return res.json();
       })
       .then((res) => {
         if (statusCode != 201) {
-          console.log(res);
           if (res?.message?.errors) {
             let errors: { message: string; key: string }[] = [];
             for (const error in res.message.errors) {
@@ -71,8 +67,9 @@ export const Register: React.FC<Props> = () => {
             }
           }
         } else {
-          cookie.set("sessionId", res._id, { path: "/" });
-          navigate("/");
+          cookie.set("userId", res._id, { path: "/" });
+          cookie.set("sessionId", res.sessionId, { path: "/" });
+          window.location.href = "/";
         }
       });
   };
@@ -81,11 +78,9 @@ export const Register: React.FC<Props> = () => {
     setErrorState([{ message: "e", key: "e" }]);
   };
 
-  const isLoggedIn = cookie.get("sessionId");
-
   const loginPath = `${window.location.origin}/login`;
 
-  return !isLoggedIn ? (
+  return (
     <Card className={styles.Center}>
       Welcome
       <form onSubmit={submitHandler} className={styles.Form}>
@@ -145,7 +140,7 @@ export const Register: React.FC<Props> = () => {
         Already registered? <a href={loginPath}>Log in</a>
       </div>
     </Card>
-  ) : (
-    <Navigate to="/" />
   );
 };
+
+export default Register;
