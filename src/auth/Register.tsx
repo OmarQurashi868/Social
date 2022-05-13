@@ -10,8 +10,7 @@ const Register: React.FC<Props> = () => {
   const cookie = new Cookie();
   const [errorState, setErrorState] = useState([{ message: "e", key: "e" }]);
   const [btnLoading, setBtnLoading] = useState(false);
-  let statusCode = 0;
-
+  
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passRef = useRef<HTMLInputElement>(null);
@@ -19,6 +18,7 @@ const Register: React.FC<Props> = () => {
   const submitHandler = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     setBtnLoading(true);
+    let statusCode = 0;
     fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Card from "../../UI/Card";
 import Post from "./Post";
+import NewPost from "../posts/NewPost";
 
 export interface Post {
   _id: string;
@@ -9,7 +10,13 @@ export interface Post {
   creationDate: Date;
   creatorId: string;
 }
+
 const PostList = () => {
+  const [refreshSwitch, setRefreshSwitch] = useState(false);
+  const refreshListHandler = () => {
+    setRefreshSwitch(!refreshSwitch);
+  };
+
   const [posts, setPosts] = useState<[Post]>([
     {
       _id: "Loading...",
@@ -23,6 +30,7 @@ const PostList = () => {
   let statusCode = 0;
 
   useEffect(() => {
+    let isMounted = true;
     fetch(`${import.meta.env.VITE_BACKEND_URL}/posts/allposts`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -33,15 +41,29 @@ const PostList = () => {
       })
       .then((res) => {
         if (statusCode == 200) {
-          setPosts(res);
+          if (isMounted) setPosts(res);
         }
       });
-  }, []);
+    return () => {
+      isMounted = false;
+    }
+  }, [refreshSwitch]);
+
+  const compare = (a: Post, b: Post): number => {
+    if (a.creationDate >= b.creationDate) {
+      return -1;
+    } else {
+      return 1;
+    }
+  };
+
+  posts.sort(compare);
 
   return (
     <div>
+      <NewPost refreshList={refreshListHandler} />
       {posts.map((e) => {
-        return <Post postData={e} key={e._id}/>;
+        return <Post postData={e} key={e._id} />;
       })}
     </div>
   );

@@ -4,10 +4,21 @@
     text-align: left;
 }
 
+.Subtitle {
+    text-align: left;
+    font-weight: lighter;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
 .Content {
     text-align: left;
 }
 
+
 .Card {
     padding: 2rem;
+    overflow-wrap: break-word;
 }

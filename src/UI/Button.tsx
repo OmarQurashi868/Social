@@ -7,14 +7,23 @@ interface Props {
   children?: JSX.Element | String;
   type?: String;
   id?: String;
-  isLoading?: Boolean;
+  isLoading?: boolean;
 }
 
 const Button = (props: Props) => {
-  const classes = `${styles.Button} ${props.className}`;
+  const classes = `${styles.Button} ${props.className ? props.className : ""}`;
+
   return (
-    <button className={classes} onClick={props.onClick}>
-      {!props.isLoading ? props.children : <div className={styles.Loader}></div>}
+    <button
+      className={classes}
+      onClick={props.onClick}
+      disabled={props.isLoading ? props.isLoading : false}
+    >
+      {!props.isLoading ? (
+        props.children
+      ) : (
+        <div className={styles.Loader}></div>
+      )}
     </button>
   );
 };

@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Cookie from "universal-cookie";
 import verifyLogin from "./VerifyLogin";
 import Home from "../home/Home";
@@ -7,7 +7,7 @@ import Register from "./Register";
 
 interface Props {}
 const sessionlessRoutes = ["/login", "/register"];
-const sessionRoutes = ["/home", "/"];
+const sessionRoutes = ["/"];
 
 const AuthRouter: React.FC<Props> = () => {
   const cookie = new Cookie();
@@ -37,12 +37,11 @@ const AuthRouter: React.FC<Props> = () => {
         setPath("/login");
       }
     } else {
-      console.log(isLoggedIn)
       if (isLoggedIn) {
         history.pushState({}, "", "/");
         setPath("/");
       } else {
-        // history.pushState({}, "", "/login");
+        history.pushState({}, "", "/login");
         setPath("/login");
       }
     }
