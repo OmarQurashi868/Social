@@ -17,7 +17,7 @@ const AuthRouter: React.FC<Props> = () => {
   const sessionId = cookie.get("sessionId");
 
   useEffect(() => {
-    verifyLogin(cookie.get("userId"), cookie.get("sessionId")).then((res) => {
+    verifyLogin().then((res) => {
       setIsLoggedIn(res);
     });
   }, [userId, sessionId]);

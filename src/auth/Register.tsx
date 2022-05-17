@@ -10,7 +10,7 @@ const Register: React.FC<Props> = () => {
   const cookie = new Cookie();
   const [errorState, setErrorState] = useState([{ message: "e", key: "e" }]);
   const [btnLoading, setBtnLoading] = useState(false);
-  
+
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passRef = useRef<HTMLInputElement>(null);
@@ -19,59 +19,64 @@ const Register: React.FC<Props> = () => {
     event.preventDefault();
     setBtnLoading(true);
     let statusCode = 0;
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userData: {
-          username: nameRef.current?.value.trim(),
-          email: emailRef.current?.value.trim(),
-          password: passRef.current?.value,
-          passwordConfirm: pass2Ref.current?.value,
-        },
-      }),
-    })
-      .then((res) => {
-        statusCode = res.status;
-        setBtnLoading(false);
-        if (statusCode === 201) {
-          setErrorState([{ message: "e", key: "e" }]);
-        }
-        return res.json();
+    try {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userData: {
+            username: nameRef.current?.value.trim(),
+            email: emailRef.current?.value.trim(),
+            password: passRef.current?.value,
+            passwordConfirm: pass2Ref.current?.value,
+          },
+        }),
       })
-      .then((res) => {
-        if (statusCode != 201) {
-          if (res?.message?.errors) {
-            let errors: { message: string; key: string }[] = [];
-            for (const error in res.message.errors) {
-              const errorData = {
-                message: res.message.errors[error].message,
-                key: error,
-              };
-              errors.push(errorData);
-            }
-            setErrorState(errors);
-          } else if (res?.message?.code) {
-            if (res?.message?.code === 11000) {
-              const errorMessage = `${
-                Object.keys(res.message.keyPattern)[0]
-              } is already used`;
-              errorMessage[0].toUpperCase();
-              const errorData = [
-                {
-                  message: errorMessage,
-                  key: Object.keys(res.message.keyPattern)[0],
-                },
-              ];
-              setErrorState(errorData);
-            }
+        .then((res) => {
+          statusCode = res.status;
+          setBtnLoading(false);
+          if (statusCode === 201) {
+            setErrorState([{ message: "e", key: "e" }]);
           }
-        } else {
-          cookie.set("userId", res._id, { path: "/" });
-          cookie.set("sessionId", res.sessionId, { path: "/" });
-          window.location.href = "/";
-        }
-      });
+          return res.json();
+        })
+        .then((res) => {
+          if (statusCode != 201) {
+            if (res?.message?.errors) {
+              let errors: { message: string; key: string }[] = [];
+              for (const error in res.message.errors) {
+                const errorData = {
+                  message: res.message.errors[error].message,
+                  key: error,
+                };
+                errors.push(errorData);
+              }
+              setErrorState(errors);
+            } else if (res?.message?.code) {
+              if (res?.message?.code === 11000) {
+                const errorMessage = `${
+                  Object.keys(res.message.keyPattern)[0]
+                } is already used`;
+                errorMessage[0].toUpperCase();
+                const errorData = [
+                  {
+                    message: errorMessage,
+                    key: Object.keys(res.message.keyPattern)[0],
+                  },
+                ];
+                setErrorState(errorData);
+              }
+            }
+          } else {
+            cookie.set("userId", res._id, { path: "/" });
+            cookie.set("sessionId", res.sessionId, { path: "/" });
+            window.location.href = "/";
+          }
+        });
+    } catch (err: any) {
+      setBtnLoading(false);
+      alert(`Error occured: ${err}`);
+    }
   };
 
   const changeHandler = () => {

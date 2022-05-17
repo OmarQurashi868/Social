@@ -31,22 +31,26 @@ const PostList = () => {
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/posts/allposts`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        statusCode = res.status;
-        return res.json();
+    try {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/posts/allposts`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       })
-      .then((res) => {
-        if (statusCode == 200) {
-          if (isMounted) setPosts(res);
-        }
-      });
+        .then((res) => {
+          statusCode = res.status;
+          return res.json();
+        })
+        .then((res) => {
+          if (statusCode == 200) {
+            if (isMounted) setPosts(res);
+          }
+        });
+    } catch (err: any) {
+      alert(`Error occured: ${err}`);
+    }
     return () => {
       isMounted = false;
-    }
+    };
   }, [refreshSwitch]);
 
   const compare = (a: Post, b: Post): number => {

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Card from "../../UI/Card";
 import Button from "../../UI/Button";
 import styles from "../../UI/Form.module.css";
@@ -17,12 +17,14 @@ const NewPost = ({ refreshList }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const textField = document.getElementById("content");
-  if (textField != null) {
-    textField.setAttribute(
-      "style",
-      `height:${textField?.scrollHeight}px;overflow-y:hidden;`
-    );
-  }
+  useEffect(() => {
+    if (textField != null) {
+      textField.setAttribute(
+        "style",
+        `height:${textField?.scrollHeight}px;overflow-y:hidden;`
+      );
+    }
+  }, []);
 
   const resizeField = () => {
     if (textField != null) {
@@ -34,10 +36,7 @@ const NewPost = ({ refreshList }: Props) => {
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    const sessionIsValid = await verifyLogin(
-      cookie.get("userId"),
-      cookie.get("sessionId")
-    );
+    const sessionIsValid = await verifyLogin();
     if (sessionIsValid) {
       let statusCode = 0;
       fetch(`${import.meta.env.VITE_BACKEND_URL}/posts/newpost`, {
@@ -82,6 +81,8 @@ const NewPost = ({ refreshList }: Props) => {
             refreshList();
           }
         });
+    } else {
+      window.location.href = "/login";
     }
   };
 

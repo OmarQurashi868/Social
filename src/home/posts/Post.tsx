@@ -12,8 +12,9 @@ const Post = ({ postData }: Children) => {
   const [creatorName, setCreatorName] = useState("Loading...");
 
   useEffect(() => {
+    let statusCode = 0;
     if (postData.creatorId != "Loading...") {
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getusername`, {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getuserinfo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -23,10 +24,15 @@ const Post = ({ postData }: Children) => {
         }),
       })
         .then((res) => {
+          statusCode = res.status;
           return res.json();
         })
         .then((res) => {
-          if (res?.userData?.username) setCreatorName(res.userData.username);
+          if (res?.userData?.username) {
+            setCreatorName(res.userData.username);
+          } else {
+            setCreatorName("INVALID USER");
+          }
         });
     }
   }, []);
