@@ -13,16 +13,15 @@ const Navbar = () => {
     let isMounted = true;
     if (cookie.get("userId") && cookie.get("sessionId")) {
       try {
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getuserinfo`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userData: {
-              _id: cookie.get("userId"),
-              sessionId: cookie.get("sessionId"),
-            },
-          }),
-        })
+        fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/auth/getuserinfo/${cookie.get(
+            "userId"
+          )}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        )
           .then((res) => {
             return res.json();
           })

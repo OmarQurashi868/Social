@@ -2,12 +2,18 @@ import { useState, useEffect } from "react";
 import Post from "./Post";
 import NewPost from "../posts/NewPost";
 
+interface UserType {
+  username: string;
+  email: string;
+  creationDate: Date;
+}
+
 export interface Post {
   _id: string;
   title: string;
   content: string;
   creationDate: Date;
-  creatorId: string;
+  creator: UserType;
 }
 
 const PostList = () => {
@@ -22,7 +28,11 @@ const PostList = () => {
       title: "Loading...",
       content: "Loading...",
       creationDate: new Date(),
-      creatorId: "Loading...",
+      creator: {
+        username: "Loading...",
+        email: "Loading...",
+        creationDate: new Date(),
+      },
     },
   ]);
 
@@ -75,22 +85,28 @@ const PostList = () => {
     };
   }, [refreshSwitch]);
 
-  window.addEventListener("scroll", () => {
+  useEffect(() => {
+    let isMounted = true;
     let isScrolled = false;
-    if (
-      window.scrollY + window.innerHeight ==
-      document.documentElement.scrollHeight
-    ) {
-      if (!isScrolled) {
-        // TODO Implement infinite scroll
-        setRefreshSwitch(!refreshSwitch)
-        console.log("scrolled");
-        isScrolled = true;
+    window.addEventListener("scroll", () => {
+      if (
+        window.scrollY + window.innerHeight ==
+        document.documentElement.scrollHeight
+      ) {
+        if (!isScrolled) {
+          isScrolled = true;
+          if (isMounted) {
+            setRefreshSwitch(!refreshSwitch);
+          }
+        }
+      } else if (isScrolled) {
+        isScrolled = false;
       }
-    } else if (isScrolled) {
-      isScrolled = false;
-    }
-  });
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [posts]);
 
   const newPostHandler = (postData: Post) => {
     setPosts((prevPost) => {
@@ -103,9 +119,10 @@ const PostList = () => {
   return (
     <div id="postList">
       <NewPost refreshList={refreshListHandler} onPost={newPostHandler} />
-      {posts.map((post, i) => {
+      {posts.map((post) => {
         return <Post postData={post} key={post._id} />;
       })}
+      <span>You've reached the end, congratulations!</span>
     </div>
   );
 };

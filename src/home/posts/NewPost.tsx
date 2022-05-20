@@ -48,7 +48,7 @@ const NewPost = ({ refreshList, onPost }: Props) => {
           postData: {
             title: titleRef.current?.value,
             content: contentRef.current?.value,
-            creatorId: cookie.get("userId"),
+            creator: cookie.get("userId"),
           },
         }),
       })

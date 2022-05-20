@@ -9,39 +9,11 @@ interface Children {
 }
 
 const Post = ({ postData }: Children) => {
-  const [creatorName, setCreatorName] = useState("Loading...");
-
-  useEffect(() => {
-    let statusCode = 0;
-    if (postData.creatorId != "Loading...") {
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/getuserinfo`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userData: {
-            _id: postData.creatorId,
-          },
-        }),
-      })
-        .then((res) => {
-          statusCode = res.status;
-          return res.json();
-        })
-        .then((res) => {
-          if (res?.userData?.username) {
-            setCreatorName(res.userData.username);
-          } else {
-            setCreatorName("INVALID USER");
-          }
-        });
-    }
-  }, []);
-
   return (
     <Card className={styles.Card}>
       <div className={styles.Title}>{postData.title}</div>
       <div className={styles.Subtitle}>
-        <div>By {creatorName}</div>
+        <div>By {postData?.creator?.username ? postData.creator.username : "INVALID USER"}</div>
         <TimeDisplay givenDate={postData.creationDate} />
       </div>
       <div className={styles.Content}>{postData.content}</div>
