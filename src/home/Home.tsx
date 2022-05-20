@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Fragment} from "react";
 import PostList from "./posts/PostList";
 import Navbar from "../UI/Navbar";
 import styles from "./Home.module.css";
@@ -7,12 +7,12 @@ interface Props {}
 
 const Home: React.FC<Props> = () => {
   return (
-    <div>
+    <Fragment>
       <Navbar />
       <div className={styles.Content}>
         <PostList />
       </div>
-    </div>
+    </Fragment>
   );
 };
 

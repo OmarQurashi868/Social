@@ -7,9 +7,10 @@ import Cookie from "universal-cookie";
 
 interface Props {
   refreshList: Function;
+  onPost: Function;
 }
 
-const NewPost = ({ refreshList }: Props) => {
+const NewPost = ({ refreshList, onPost }: Props) => {
   const cookie = new Cookie();
   const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
@@ -27,6 +28,7 @@ const NewPost = ({ refreshList }: Props) => {
   }, []);
 
   const resizeField = () => {
+    changeHandler();
     if (textField != null) {
       textField.style.height = "auto";
       textField.style.height = `${textField.scrollHeight}px`;
@@ -78,12 +80,17 @@ const NewPost = ({ refreshList }: Props) => {
             if (contentRef.current?.value != undefined) {
               contentRef.current.value = "";
             }
-            refreshList();
+            // refreshList();
+            onPost(res)
           }
         });
     } else {
       window.location.href = "/login";
     }
+  };
+
+  const changeHandler = () => {
+    setErrorState([{ message: "e", key: "e" }]);
   };
 
   return (
@@ -97,7 +104,13 @@ const NewPost = ({ refreshList }: Props) => {
           ))}
         <div className={styles.MiniContainer}>
           Title
-          <input type="text" id="title" ref={titleRef} autoComplete="off" />
+          <input
+            type="text"
+            id="title"
+            ref={titleRef}
+            autoComplete="off"
+            onChange={changeHandler}
+          />
         </div>
         <div className={styles.MiniContainer}>
           Content
