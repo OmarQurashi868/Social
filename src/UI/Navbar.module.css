@@ -1,8 +1,8 @@
 .Navbar {
     display: flex;
     flex-direction: row;
-    background-color: pink;
-    height: 3rem;
+    background-color: var(--accent-color);
+    height: 3.5rem;
     align-items: center;
     justify-content: space-between;
     padding-left: 1rem;

@@ -1,34 +1,40 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Cookie from "universal-cookie";
 import styles from "./Navbar.module.css";
+import VerifyLogin from "../auth/VerifyLogin";
+import Dropdown from "./Dropdown";
 
 const Navbar = () => {
   const [username, setUsername] = useState("Loading");
 
+  const [dropdown, setDropdown] = useState(false);
+
   const cookie = new Cookie();
-  const navigate = useNavigate();
 
   useEffect(() => {
     let isMounted = true;
     if (cookie.get("userId") && cookie.get("sessionId")) {
       try {
-        fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/auth/getuserinfo/${cookie.get(
-            "userId"
-          )}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
+        VerifyLogin().then((res) => {
+          if (res) {
+            fetch(
+              `${
+                import.meta.env.VITE_BACKEND_URL
+              }/auth/getuserinfo/${cookie.get("userId")}`,
+              {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+              }
+            )
+              .then((res) => {
+                return res.json();
+              })
+              .then((res) => {
+                if (res?.userData?.username && isMounted)
+                  setUsername(res.userData.username);
+              });
           }
-        )
-          .then((res) => {
-            return res.json();
-          })
-          .then((res) => {
-            if (res?.userData?.username && isMounted)
-              setUsername(res.userData.username);
-          });
+        });
       } catch (err: any) {
         alert(`Error occured: ${err}`);
       }
@@ -58,6 +64,19 @@ const Navbar = () => {
       alert(`Error occured: ${err}`);
     }
   };
+
+  const dropdownToggle = () => {
+    setDropdown(!dropdown);
+  };
+
+  document.addEventListener("click", () => {
+    if (dropdown) {
+      setDropdown(false)
+    } else {
+      setDropdown(true);
+    }
+  });
+
   return (
     <div className={styles.Navbar}>
       <div
@@ -66,9 +85,17 @@ const Navbar = () => {
       >
         <span>social</span>
       </div>
-      <div className={styles.Account} onClick={() => console.log("hi")}>
+      <div
+        className={styles.Account}
+        id="dropdown-button"
+        onClick={dropdownToggle}
+      >
         <span>{username}</span>
       </div>
+      <Dropdown isEnabled={dropdown}>
+        <li>Account settings</li>
+        <li onClick={logoutHandler}>Log out</li>
+      </Dropdown>
     </div>
   );
 };

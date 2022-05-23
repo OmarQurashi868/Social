@@ -1,5 +1,5 @@
 .Button {
-  background-color: pink;
+  background-color: var(--accent-color);
   border: 1px solid rgb(136, 103, 108);
   border-radius: 6px;
   padding: 0.5rem;

@@ -5,6 +5,11 @@
 }
 
 body {
-  background-color: rgb(232, 233, 240);
+  background-color: var(--background-color)
+}
 
+:root {
+  --background-color: rgb(232, 233, 240);
+  --accent-color: pink;
+  --corner-radius: 6px;
 }
