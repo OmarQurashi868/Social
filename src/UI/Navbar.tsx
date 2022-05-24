@@ -69,14 +69,6 @@ const Navbar = () => {
     setDropdown(!dropdown);
   };
 
-  document.addEventListener("click", () => {
-    if (dropdown) {
-      setDropdown(false)
-    } else {
-      setDropdown(true);
-    }
-  });
-
   return (
     <div className={styles.Navbar}>
       <div
@@ -88,14 +80,15 @@ const Navbar = () => {
       <div
         className={styles.Account}
         id="dropdown-button"
-        onClick={dropdownToggle}
+        onMouseEnter={() => setDropdown(true)}
+        onMouseLeave={() => setDropdown(false)}
       >
         <span>{username}</span>
+        <Dropdown isEnabled={dropdown}>
+          <li>Account settings</li>
+          <li onClick={logoutHandler}>Log out</li>
+        </Dropdown>
       </div>
-      <Dropdown isEnabled={dropdown}>
-        <li>Account settings</li>
-        <li onClick={logoutHandler}>Log out</li>
-      </Dropdown>
     </div>
   );
 };

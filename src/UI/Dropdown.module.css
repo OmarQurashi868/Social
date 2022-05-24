@@ -21,20 +21,22 @@
   list-style: none;
   padding: 1rem;
   color: white;
-  width: 95%;
-  position: fixed;
-  top: 6.75%;
-  left: 2.5%;
+  width: 100%;
+  position: absolute;
+  top: 3.5rem;
+  /* left: 2.5%; */
+  right: 0%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   /* gap: 0.5rem; */
-  font-size: 1.25rem;
+  font-size: 1rem;
   border-bottom-right-radius: var(--corner-radius);
   border-bottom-left-radius: var(--corner-radius);
   padding: 0;
   z-index: 500;
+  font-weight: normal;
 }
 
 .Menu li {
@@ -55,9 +57,9 @@
 
 @media (min-width: 768px) {
   .Menu {
-    width: 15%;
+    /* width: 15%; */
     font-size: 1rem;
-    right: 1%;
-    left: auto;
+    /* right: 2.05%;
+    left: auto; */
   }
 }
