@@ -27,6 +27,7 @@ const verifyLogin = async (): Promise<boolean> => {
   } else {
     cookie.remove("userId");
     cookie.remove("sessionId");
+    window.location.href = "/login"
     return false;
   }
 };

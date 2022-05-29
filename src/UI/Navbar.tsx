@@ -85,7 +85,7 @@ const Navbar = () => {
       >
         <span>{username}</span>
         <Dropdown isEnabled={dropdown}>
-          <li>Account settings</li>
+          <li>Profile</li>
           <li onClick={logoutHandler}>Log out</li>
         </Dropdown>
       </div>
